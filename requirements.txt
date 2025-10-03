@@ -1,0 +1,4 @@
+# Minimal dependencies for the multisig CLI
+web3>=7
+eth-account>=0.13.0
+python-dotenv>=1.0.0
