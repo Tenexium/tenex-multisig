@@ -1,4 +1,4 @@
-# Tenex Multisig CLI
+# Tenexium Multisig CLI
 
 Minimal Python CLI to interact with the on-chain `MultiSigWallet` contract.
 
@@ -34,63 +34,33 @@ Update values:
 - `CONTRACT_ADDRESS`: Deployed `MultiSigWallet` address (or Use default)
 - `CHAIN_ID`: Network chain id (Or use default)
 
-You can override any env via CLI flags (see below).
-
-## Quick start
-
-- Show owners:
-  
-```bash
-python multisig.py owners
-```
-
-- Show threshold:
-  
-```bash
-python multisig.py threshold
-```
-
-- Show transaction count and a tx:
-
-```bash
-python multisig.py txcount
-python multisig.py tx 0
-```
-
-- Show lock period and submission block for a tx:
-  
-```bash
-python multisig.py lock-period
-python multisig.py submission-block 0
-```
-
 ## Command overview
 
 ### Owner actions
 
-- `confirm <id>`: Add your confirmation to a queued transaction
-- `revoke <id>`: Revoke your confirmation (if not executed)
-- `execute <id>`: Execute a confirmed transaction
-- `add-owner <address>`: Propose adding an owner (encodes and submits to the multisig)
-- `remove-owner <address>`: Propose removing an owner (encodes and submits to the multisig)
-- `set-lock-period <period>` (alias: `setlockperiod`): Propose setting the lock period (encodes and submits to the multisig)
+- `python multisig.py confirm <transaction_id>`: Add your confirmation to a queued transaction
+- `python multisig.py revoke <transaction_id>`: Revoke your confirmation (if not executed)
+- `python multisig.py execute <transaction_id>`: Execute a confirmed transaction
+- `python multisig.py add-owner <new_owner_address>`: Propose adding an owner (encodes and submits to the multisig)
+- `python multisig.py remove-owner <old_owner_address>`: Propose removing an owner (encodes and submits to the multisig)
+- `python multisig.py set-lock-period <lock_period>` (alias: `setlockperiod`): Propose setting the lock period in blocks (encodes and submits to the multisig)
 
 ### View actions
 
-- `owners`: List all owners
-- `threshold`: Current confirmation threshold
-- `txcount`: Total number of submitted transactions
-- `tx <id>`: Get a transaction by id
-- `is-owner <addr>`: Check if an address is an owner
-- `is-confirmed <id> <owner>`: Check if a tx is confirmed by an owner
-- `confcount <id>`: Get confirmation count for a tx
-- `owner-ver`: Current owner set version
-- `lock-period`: Current lock period
-- `submission-block <id>`: Block number when the tx was submitted
+- `python multisig.py owners`: List all owners
+- `python multisig.py threshold`: Current confirmation threshold
+- `python multisig.py txcount`: Total number of submitted transactions
+- `python multisig.py tx <transaction_id>`: Get a transaction by id
+- `python multisig.py is-owner <owner_address>`: Check if an address is an owner
+- `python multisig.py is-confirmed <transaction_id> <owner>`: Check if a tx is confirmed by an owner
+- `python multisig.py confcount <transaction_id>`: Get confirmation count for a tx
+- `python multisig.py owner-ver`: Current owner set version
+- `python multisig.py lock-period`: Current lock period
+- `python multisig.py submission-block <transaction_id>`: Block number when the tx was submitted
 
 ### Submit
 
-- `submit --to <address> [--data 0x...] [--value-eth N | --value-wei N]`: Submit any transaction via the multisig (to another contract or to send ETH)
+- `python multisig.py submit --to <address> [--data 0x...] [--value-eth N | --value-wei N]`: Submit any transaction via the multisig (to another contract or to send ETH)
 
 Global flags (apply to most commands):
 
@@ -108,78 +78,7 @@ Signing/fee flags (for write/admin commands):
 - `--gas-price-gwei` (legacy) or `--max-fee-gwei`/`--max-priority-gwei` (EIP-1559)
 - `--no-wait`: Do not wait for receipt
 
-## Examples
-
-### Owner actions
-
-- Confirm / revoke / execute a tx:
-  
-```bash
-python multisig.py confirm 0
-python multisig.py revoke 0
-python multisig.py execute 0
-```
-
-- Add owner:
-  
-```bash
-python multisig.py add-owner 0xNewOwnerAddress
-```
-
-- Remove owner:
-  
-```bash
-python multisig.py remove-owner 0xOwnerToRemove
-```
-
-- Set lock period:
-  
-```bash
-python multisig.py set-lock-period 14400
-# or using the alias
-python multisig.py setlockperiod 14400
-```
-
-### View actions
-
-- Owners:
-  
-```bash
-python multisig.py owners
-```
-
-- Threshold:
-  
-```bash
-python multisig.py threshold
-```
-
-- Tx count and a specific tx:
-  
-```bash
-python multisig.py txcount
-python multisig.py tx 0
-```
-
-- Owner checks and confirmations:
-  
-```bash
-python multisig.py is-owner 0xOwnerAddress
-python multisig.py is-confirmed 0 0xOwnerAddress
-python multisig.py confcount 0
-python multisig.py owner-ver
-```
-
-- Lock period and submission block:
-  
-```bash
-python multisig.py lock-period
-python multisig.py submission-block 0
-```
-
-### Submit
-
-- Encode calldata for a function (e.g., ERC20 transfer with external ABI):
+- Encode calldata for a function:
   
 ```bash
 DATA=$(python multisig.py --abi ./abi.json encode functionName functionArgs)
@@ -208,14 +107,6 @@ python multisig.py submit --to 0xRecipient --value-eth 0.1
   - ascii: `raw:hello`
 - **arrays**: JSON array `["0xA", "0xB"]` or comma-separated `0xA,0xB`
 
-Examples:
-
-```bash
-# bytes
-python multisig.py submit --to 0xTarget --data 0x11223344
-python multisig.py submit --to 0xTarget --data raw:ping
-```
-
 ## Fees and gas
 
 - By default, the CLI uses EIP-1559 if available and falls back to legacy gas price
@@ -243,10 +134,6 @@ python multisig.py submit --to 0xTarget --data raw:ping
 - Never commit your real `PRIVATE_KEY`
 - Prefer testing on a testnet before mainnet
 - This CLI signs transactions locally; hardware wallets are not supported
-
-## License
-
-MIT
 
 ## Subtensor EVM (TAO) quick config
 
