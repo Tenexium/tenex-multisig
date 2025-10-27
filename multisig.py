@@ -217,7 +217,18 @@ TARGET_ABI: List[dict] = [
             {"internalType": "bytes", "name": "data", "type": "bytes"},
         ],
         "outputs": [],
-    }
+    },
+    {
+        "type": "function",
+        "stateMutability": "nonpayable",
+        "name": "updateTierParameters",
+        "inputs": [
+            {"internalType": "uint256[5]", "name": "_tierThresholds", "type": "uint256[5]"},
+            {"internalType": "uint256[6]", "name": "_tierFeeDiscounts", "type": "uint256[6]"},
+            {"internalType": "uint256[6]", "name": "_tierMaxLeverages", "type": "uint256[6]"}
+        ],
+        "outputs": [],
+    },
 ]
 
 
@@ -272,6 +283,11 @@ def parse_array(elem_parser, text: str) -> list:
 def parser_for_abi_type(w3: Web3, abi_type: str):
     if abi_type.endswith("[]"):
         elem_type = abi_type[:-2]
+        elem_parser = parser_for_abi_type(w3, elem_type)
+        return lambda s: parse_array(elem_parser, s)
+    # Handle fixed-size arrays like uint256[5]
+    if "[" in abi_type and "]" in abi_type:
+        elem_type = abi_type.split("[")[0]
         elem_parser = parser_for_abi_type(w3, elem_type)
         return lambda s: parse_array(elem_parser, s)
     if abi_type == "address":
